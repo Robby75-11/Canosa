@@ -18,7 +18,7 @@ public class Itinerario {
     private String titolo;
     private String descrizione;
     private String percorso;
-    private String Tipo;
+    private String tipo;
 
     @ElementCollection
     private List<String> immagini = new ArrayList<>();

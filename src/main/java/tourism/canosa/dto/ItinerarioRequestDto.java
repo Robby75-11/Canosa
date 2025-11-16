@@ -9,6 +9,6 @@ public class ItinerarioRequestDto {
     private String titolo;
     private String descrizione;
     private String percorso;
-    private String Tipo;
+    private String tipo;
     private List<String> immagini;
 }

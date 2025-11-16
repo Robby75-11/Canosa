@@ -14,7 +14,6 @@ public class ProdottoTipico {
     @GeneratedValue
     private Long id;
     private String nome;
-
     private String categoria; // es. vino, olio, dolci, formaggi
 
     @Column(length = 1000)
