@@ -28,7 +28,7 @@ public class ProdottoTipicoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('RUOLO_USER') or hasAuthority('RUOLO_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ProdottoTipicoResponseDto create(@RequestPart("request") ProdottoTipicoRequestDto request,
                                             @RequestPart("immagini") List<MultipartFile> immagini) {
         return prodottoTipicoService.create(request, immagini);

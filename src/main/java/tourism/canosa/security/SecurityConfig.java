@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())  // ✅ nuovo modo per disabilitare CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/prodotti/**").permitAll()
+                        .requestMatchers("/prodotti/**").hasAnyRole("USER","ADMIN")
                         .anyRequest().authenticated()
                 ) // ✅ nuovo modo per le autorizzazioni
                 .sessionManagement(session -> session
