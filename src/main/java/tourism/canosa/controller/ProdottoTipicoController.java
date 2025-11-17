@@ -27,21 +27,35 @@ public class ProdottoTipicoController {
         return prodottoTipicoService.getById(id);
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ProdottoTipicoResponseDto create(@RequestPart("request") ProdottoTipicoRequestDto request,
-                                            @RequestPart("immagini") List<MultipartFile> immagini) {
-        return prodottoTipicoService.create(request, immagini);
+    // CREAZIONE solo JSON (senza immagini)
+    @PostMapping(consumes = "application/json")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ProdottoTipicoResponseDto create(@RequestBody ProdottoTipicoRequestDto prodotto) {
+        return prodottoTipicoService.create(prodotto, null);
     }
 
-    @PutMapping("/{id}")
-    public ProdottoTipicoResponseDto update(@PathVariable Long id,
-                                            @RequestPart("request") ProdottoTipicoRequestDto request,
-                                            @RequestPart(value = "immagini", required = false) List<MultipartFile> immagini) {
-        return prodottoTipicoService.update(id, request, immagini);
+    // AGGIUNTA immagini a prodotto esistente
+    @PatchMapping(path = "/{id}/immagini", consumes = {"multipart/form-data"})
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ProdottoTipicoResponseDto uploadImages(
+            @PathVariable Long id,
+            @RequestPart("immagini") List<MultipartFile> immagini) {
+        // Recuperiamo il prodotto senza modificare altri campi
+        ProdottoTipicoResponseDto prodotto = prodottoTipicoService.getById(id);
+
+        // Creiamo un DTO "vuoto" con valori correnti, utile per update del service
+        ProdottoTipicoRequestDto dto = new ProdottoTipicoRequestDto();
+        dto.setNome(prodotto.getNome());
+        dto.setCategoria(prodotto.getCategoria());
+        dto.setDescrizione(prodotto.getDescrizione());
+        dto.setPrezzo(prodotto.getPrezzo());
+        dto.setOrigine(prodotto.getOrigine());
+
+        return prodottoTipicoService.update(id, dto, immagini);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public String delete(@PathVariable Long id) {
         prodottoTipicoService.delete(id);
         return "Prodotto tipico eliminato ID: " + id;

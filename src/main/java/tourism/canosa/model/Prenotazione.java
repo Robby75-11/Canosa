@@ -22,8 +22,8 @@ public class Prenotazione {
     private StatoPrenotazione stato = StatoPrenotazione.IN_ATTESA;
 
     @ManyToOne
-    @JoinColumn(name = "utente_id")
-    private User utente;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // 🔹 Relazione con Itinerario
     @ManyToOne

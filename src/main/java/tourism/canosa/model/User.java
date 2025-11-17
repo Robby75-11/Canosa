@@ -23,7 +23,7 @@ public class User {
     private Ruolo ruolo;
 
     // 🔹 Relazione con Prenotazioni
-    @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Prenotazione> prenotazioni;
 
 }

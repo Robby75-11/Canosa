@@ -11,6 +11,6 @@ public class PrenotazioneRequestDto {
     private String nomeCliente; // aggiungere un campo per il cliente
     private LocalDate dataPrenotazione;
     private int numeroPersone;
-    private Long utenteId;
+    private Long userId;
     private Long itinerarioId;
 }

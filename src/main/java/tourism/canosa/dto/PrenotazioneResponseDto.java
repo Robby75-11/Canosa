@@ -13,7 +13,7 @@ public class PrenotazioneResponseDto {
     private LocalDate dataPrenotazione;
     private int numeroPersone;
     private StatoPrenotazione stato ;
-    private Long utenteId;
+    private Long userId;
     private Long itinerarioId;
 
 }

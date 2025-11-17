@@ -26,17 +26,17 @@ public class ItinerarioController {
         return itinerarioService.getItinerarioById(id);
     }
 
-    @PostMapping
-    public ItinerarioResponseDto create(@RequestPart("request") ItinerarioRequestDto request,
-                                        @RequestPart("immagini") List<MultipartFile> immagini) {
-        return itinerarioService.create(request, immagini);
+    // Creazione solo JSON
+    @PostMapping(consumes = "application/json")
+    public ItinerarioResponseDto createJson(@RequestBody ItinerarioRequestDto request) {
+        return itinerarioService.create(request);
     }
 
-    @PutMapping("/{id}")
-    public ItinerarioResponseDto update(@PathVariable Long id,
-                                        @RequestPart("request") ItinerarioRequestDto request,
-                                        @RequestPart(value = "immagini", required = false) List<MultipartFile> immagini) {
-        return itinerarioService.update(id, request, immagini);
+    // Aggiunta immagini (PATCH)
+    @PatchMapping(path = "/{id}/immagini", consumes = "multipart/form-data")
+    public ItinerarioResponseDto uploadImages(@PathVariable Long id,
+                                              @RequestPart("immagini") List<MultipartFile> immagini) {
+        return itinerarioService.addImages(id, immagini);
     }
 
     @DeleteMapping("/{id}")

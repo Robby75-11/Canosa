@@ -23,62 +23,51 @@ public class ItinerarioService {
     private ItinerarioRepository itinerarioRepository;
 
     @Autowired
-    private Cloudinary cloudinary; // configurato come bean
+    private Cloudinary cloudinary;
 
-    // 🔹 Tutti gli itinerari
+    // Tutti gli itinerari
     public List<ItinerarioResponseDto> getAllItinerari() {
         return itinerarioRepository.findAll().stream().map(this::toResponseDto).collect(Collectors.toList());
     }
 
-    // 🔹 Singolo itinerario
     public ItinerarioResponseDto getItinerarioById(Long id) {
         Itinerario it = itinerarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Itinerario non trovato"));
         return toResponseDto(it);
     }
 
-    // 🔹 Creazione itinerario con immagini
-    public ItinerarioResponseDto create(ItinerarioRequestDto request, List<MultipartFile> immagini) {
+    // Creazione solo JSON
+    public ItinerarioResponseDto create(ItinerarioRequestDto request) {
         Itinerario it = new Itinerario();
         it.setTitolo(request.getTitolo());
         it.setDescrizione(request.getDescrizione());
         it.setPercorso(request.getPercorso());
         it.setTipo(request.getTipo());
-
-        if (immagini != null && !immagini.isEmpty()) {
-            it.setImmagini(uploadImages(immagini));
-        }
+        it.setImmagini(new ArrayList<>()); // inizializza vuoto
 
         Itinerario saved = itinerarioRepository.save(it);
         return toResponseDto(saved);
     }
 
-    // 🔹 Aggiornamento itinerario con eventuali nuove immagini
-    public ItinerarioResponseDto update(Long id, ItinerarioRequestDto request, List<MultipartFile> immagini) {
+    // Upload immagini (PATCH)
+    public ItinerarioResponseDto addImages(Long id, List<MultipartFile> immagini) {
+        if (immagini == null || immagini.isEmpty()) throw new RuntimeException("Nessuna immagine fornita");
+
         Itinerario it = itinerarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Itinerario non trovato"));
 
-        it.setTitolo(request.getTitolo());
-        it.setDescrizione(request.getDescrizione());
-        it.setPercorso(request.getPercorso());
-        it.setTipo(request.getTipo());
-
-        if (immagini != null && !immagini.isEmpty()) {
-            List<String> newImages = uploadImages(immagini);
-            if (it.getImmagini() == null) it.setImmagini(new ArrayList<>());
-            it.getImmagini().addAll(newImages);
-        }
+        List<String> newImages = uploadImages(immagini);
+        if (it.getImmagini() == null) it.setImmagini(new ArrayList<>());
+        it.getImmagini().addAll(newImages);
 
         Itinerario saved = itinerarioRepository.save(it);
         return toResponseDto(saved);
     }
 
-    // 🔹 Eliminazione itinerario
     public void delete(Long id) {
         itinerarioRepository.deleteById(id);
     }
 
-    // 🔹 Utility: converte entity in ResponseDto
     private ItinerarioResponseDto toResponseDto(Itinerario it) {
         ItinerarioResponseDto dto = new ItinerarioResponseDto();
         dto.setId(it.getId());
@@ -86,11 +75,10 @@ public class ItinerarioService {
         dto.setDescrizione(it.getDescrizione());
         dto.setPercorso(it.getPercorso());
         dto.setTipo(it.getTipo());
-        dto.setImmagini(it.getImmagini()); // lista di URL
+        dto.setImmagini(it.getImmagini());
         return dto;
     }
 
-    // 🔹 Upload immagini su Cloudinary
     private List<String> uploadImages(List<MultipartFile> files) {
         List<String> urls = new ArrayList<>();
         for (MultipartFile file : files) {

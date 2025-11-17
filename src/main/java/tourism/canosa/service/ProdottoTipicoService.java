@@ -25,9 +25,11 @@ public class ProdottoTipicoService {
     @Autowired
     private Cloudinary cloudinary; // configurato come bean
 
-    // Tutti i prodotti
+    // 🔹 Tutti i prodotti
     public List<ProdottoTipicoResponseDto> getAll() {
-        return prodottoTipicoRepository.findAll().stream().map(this::toResponseDto).collect(Collectors.toList());
+        return prodottoTipicoRepository.findAll().stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     public ProdottoTipicoResponseDto getById(Long id) {
@@ -36,7 +38,7 @@ public class ProdottoTipicoService {
         return toResponseDto(p);
     }
 
-    // Creazione con upload immagini
+    // 🔹 Creazione prodotto (JSON + eventuali immagini)
     public ProdottoTipicoResponseDto create(ProdottoTipicoRequestDto request, List<MultipartFile> immagini) {
         ProdottoTipico p = new ProdottoTipico();
         p.setNome(request.getNome());
@@ -45,7 +47,7 @@ public class ProdottoTipicoService {
         p.setPrezzo(request.getPrezzo());
         p.setOrigine(request.getOrigine());
 
-        // upload immagini
+        // upload immagini (gestione null)
         List<String> immaginiUrl = uploadImages(immagini);
         p.setImmagini(immaginiUrl);
 
@@ -53,7 +55,7 @@ public class ProdottoTipicoService {
         return toResponseDto(saved);
     }
 
-    // Aggiornamento con eventuale nuove immagini
+    // 🔹 Aggiornamento prodotto (JSON + eventuali nuove immagini)
     public ProdottoTipicoResponseDto update(Long id, ProdottoTipicoRequestDto request, List<MultipartFile> immagini) {
         ProdottoTipico p = prodottoTipicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prodotto tipico non trovato"));
@@ -64,6 +66,7 @@ public class ProdottoTipicoService {
         p.setPrezzo(request.getPrezzo());
         p.setOrigine(request.getOrigine());
 
+        // aggiungi immagini se presenti
         if (immagini != null && !immagini.isEmpty()) {
             List<String> immaginiUrl = uploadImages(immagini);
             p.getImmagini().addAll(immaginiUrl);
@@ -73,11 +76,27 @@ public class ProdottoTipicoService {
         return toResponseDto(saved);
     }
 
+    // 🔹 Aggiunta immagini a prodotto esistente (PATCH)
+    public ProdottoTipicoResponseDto addImages(Long id, List<MultipartFile> immagini) {
+        if (immagini == null || immagini.isEmpty()) {
+            return getById(id); // niente da aggiungere
+        }
+
+        ProdottoTipico p = prodottoTipicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Prodotto tipico non trovato"));
+
+        List<String> immaginiUrl = uploadImages(immagini);
+        p.getImmagini().addAll(immaginiUrl);
+
+        ProdottoTipico saved = prodottoTipicoRepository.save(p);
+        return toResponseDto(saved);
+    }
+
     public void delete(Long id) {
         prodottoTipicoRepository.deleteById(id);
     }
 
-    // 🔹 Utility: converte entity in ResponseDto
+    // 🔹 Converti entity in ResponseDto
     private ProdottoTipicoResponseDto toResponseDto(ProdottoTipico p) {
         ProdottoTipicoResponseDto dto = new ProdottoTipicoResponseDto();
         dto.setId(p.getId());
@@ -90,8 +109,12 @@ public class ProdottoTipicoService {
         return dto;
     }
 
-    // 🔹 Upload immagini su Cloudinary
+    // 🔹 Upload immagini su Cloudinary (gestione null)
     private List<String> uploadImages(List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         List<String> urls = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
