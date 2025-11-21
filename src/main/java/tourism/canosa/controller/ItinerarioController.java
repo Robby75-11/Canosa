@@ -1,6 +1,7 @@
 package tourism.canosa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tourism.canosa.dto.ItinerarioRequestDto;
@@ -34,6 +35,7 @@ public class ItinerarioController {
 
     // Aggiunta immagini (PATCH)
     @PatchMapping(path = "/{id}/immagini", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('ADMIN')")
     public ItinerarioResponseDto uploadImages(@PathVariable Long id,
                                               @RequestPart("immagini") List<MultipartFile> immagini) {
         return itinerarioService.addImages(id, immagini);

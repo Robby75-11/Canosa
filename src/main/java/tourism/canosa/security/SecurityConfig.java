@@ -2,6 +2,7 @@ package tourism.canosa.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -63,8 +64,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())  // ✅ nuovo modo per disabilitare CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/prodotti/**").hasAnyRole("USER","ADMIN")
-                        .requestMatchers("/itinerari/**").hasAnyRole("USER","ADMIN")
+                        // --- PRENOTAZIONI (QUI MANCAVA) ---
+                        .requestMatchers(HttpMethod.GET, "/prenotazioni/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/prenotazioni/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/prenotazioni/**").hasRole("ADMIN")
+
+                        // 🔒 Limita le operazioni di modifica (POST, PATCH, DELETE) solo a ADMIN
+                        .requestMatchers(HttpMethod.GET, "/itinerari/**").permitAll() // Accesso in lettura
+                        .requestMatchers(HttpMethod.POST, "/itinerari/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/itinerari/**").hasRole("ADMIN") // <-- CORREZIONE CHIAVE
+                        .requestMatchers(HttpMethod.DELETE, "/itinerari/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/prodotti/**").permitAll() // Accesso in lettura
+                        .requestMatchers(HttpMethod.POST, "/prodotti/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/prodotti/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/prodotti/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ) // ✅ nuovo modo per le autorizzazioni
                 .sessionManagement(session -> session
