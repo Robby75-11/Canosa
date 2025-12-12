@@ -2,8 +2,6 @@ package tourism.canosa.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.kafka.core.KafkaAdmin;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +17,7 @@ public class Itinerario {
     private String descrizione;
     private String percorso;
     private String tipo;
+
 
     @ElementCollection
     private List<String> immagini = new ArrayList<>();

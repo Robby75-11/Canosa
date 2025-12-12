@@ -43,7 +43,7 @@ public class ItinerarioService {
         it.setDescrizione(request.getDescrizione());
         it.setPercorso(request.getPercorso());
         it.setTipo(request.getTipo());
-        it.setImmagini(new ArrayList<>()); // inizializza vuoto
+        it.setImmagini(new ArrayList<>()); // inizializza vuoto051175
 
         Itinerario saved = itinerarioRepository.save(it);
         return toResponseDto(saved);
