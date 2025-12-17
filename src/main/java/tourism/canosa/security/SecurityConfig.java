@@ -70,15 +70,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/prenotazioni/**").hasRole("ADMIN")
 
                         // 🔒 Limita le operazioni di modifica (POST, PATCH, DELETE) solo a ADMIN
-                        .requestMatchers(HttpMethod.GET, "/itinerari/**").permitAll() // Accesso in lettura
-                        .requestMatchers(HttpMethod.POST, "/itinerari/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/itinerari/**").hasRole("ADMIN") // <-- CORREZIONE CHIAVE
-                        .requestMatchers(HttpMethod.DELETE, "/itinerari/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/itinerari", "/itinerari/**").permitAll() // Accesso in lettura
+                        .requestMatchers(HttpMethod.POST, "/itinerari/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/itinerari/**").hasAuthority("ADMIN") // <-- CORREZIONE CHIAVE
+                        .requestMatchers(HttpMethod.DELETE, "/itinerari/**").hasAuthority("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/prodotti/**").permitAll() // Accesso in lettura
-                        .requestMatchers(HttpMethod.POST, "/prodotti/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/prodotti/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/prodotti/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/prodotti", "/prodotti/**").permitAll() // Accesso in lettura
+                        .requestMatchers(HttpMethod.POST, "/prodotti/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/prodotti/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/prodotti/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 ) // ✅ nuovo modo per le autorizzazioni
                 .sessionManagement(session -> session

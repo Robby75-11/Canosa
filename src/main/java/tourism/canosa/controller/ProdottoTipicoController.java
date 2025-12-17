@@ -29,14 +29,14 @@ public class ProdottoTipicoController {
 
     // CREAZIONE solo JSON (senza immagini)
     @PostMapping(consumes = "application/json")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ProdottoTipicoResponseDto create(@RequestBody ProdottoTipicoRequestDto prodotto) {
         return prodottoTipicoService.create(prodotto, null);
     }
 
     // AGGIUNTA immagini a prodotto esistente
     @PatchMapping(path = "/{id}/immagini", consumes = {"multipart/form-data"})
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ProdottoTipicoResponseDto uploadImages(
             @PathVariable Long id,
             @RequestPart("immagini") List<MultipartFile> immagini) {
@@ -55,7 +55,7 @@ public class ProdottoTipicoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAuthority('USER','ADMIN')")
     public String delete(@PathVariable Long id) {
         prodottoTipicoService.delete(id);
         return "Prodotto tipico eliminato ID: " + id;

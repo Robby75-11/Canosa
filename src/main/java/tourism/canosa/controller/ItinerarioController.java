@@ -35,7 +35,7 @@ public class ItinerarioController {
 
     // Aggiunta immagini (PATCH)
     @PatchMapping(path = "/{id}/immagini", consumes = "multipart/form-data")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ItinerarioResponseDto uploadImages(@PathVariable Long id,
                                               @RequestPart("immagini") List<MultipartFile> immagini) {
         return itinerarioService.addImages(id, immagini);

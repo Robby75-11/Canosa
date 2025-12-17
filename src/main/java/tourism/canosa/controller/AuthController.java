@@ -5,6 +5,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import tourism.canosa.dto.RegisterRequestDto;
+import tourism.canosa.enumeration.Ruolo;
 import tourism.canosa.model.User;
 import tourism.canosa.repository.UserRepository;
 import tourism.canosa.security.JwtUtil;
@@ -37,13 +39,26 @@ public class AuthController {
 
     // 🔹 Registrazione utente
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        Optional<User> existing = userRepository.findByEmail(user.getEmail());
+    public String register(@RequestBody RegisterRequestDto request) {
+
+        Optional<User> existing = userRepository.findByEmail(request.getEmail());
         if (existing.isPresent()) {
             return "Email già registrata";
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = new User();
+        user.setNome(request.getNome());
+        user.setCognome(request.getCognome());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // assegna ruolo di default se non specificato
+        if (request.getRuolo() != null) {
+            user.setRuolo(request.getRuolo());
+        } else {
+            user.setRuolo(Ruolo.USER);  // ✅ ruolo di default
+        }
         userRepository.save(user);
         return "Registrazione avvenuta con successo";
     }
